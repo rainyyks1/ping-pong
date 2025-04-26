@@ -5,7 +5,7 @@ win_height = 500
 
 clock = time.Clock()
 FPS = 60
-speed = 5
+
 game = True
 finish = False
 class GameSprite(sprite.Sprite):
@@ -18,7 +18,7 @@ class GameSprite(sprite.Sprite):
 
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
-class Player1(GameSprite):
+class Player(GameSprite):
     def update_r(self):
         keys = key.get_pressed()
         if keys_passed[K_w] and self.rect.y > 5:
@@ -35,13 +35,16 @@ class Player1(GameSprite):
 
 window = display.set_mode((win_width, win_height))
 window.fill(back)
-display.set_caption('Ping-Pong game')
-hero1 = Player1(5, 'racket.png', 10, 250, 50, 65)
-hero2 = Player2(5, 'racket.png', 650, 250, 50, 65)
-ball = Player1(5, 'tennis-ball.png', 350, 250, 50, 50)
 speed_x = 3
 speed_y = 3
+racket1 = Player('racket.png', 30, 200, 4, 50, 150)
+racket2 = Player('racket.png', 520, 200, 4, 50, 150)
+ball = GameSprite('tennis-ball.png', 200, 200, 4, 50, 50)
 
+font.init()
+font = font.Font(None, 35)
+lose1 = font.render('PLAYER 1 LOSE!', True, (180, 0, 0))
+lose2 = font.render('PLAYER 2 LOSE!', True, (180, 0, 0))
 while game:
     for e in event.get():
         if e.type == QUIT:
@@ -52,37 +55,29 @@ while game:
         racket2.update_r()
         ball.rect.x += speed_x
         ball.rect.y += speed_y
-    if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
-        speed_x *= 1
-        speed_y *= 1
-    if ball.rect.y > win_height-59 or ball.rect.y < 0:
-        speed_y *= 1
-    if ball.rect.x < 0:
-        finish = True
-        window.blit(lose1, (200,200))
-        game_over = True
-    if ball.rect.x > win_width:
-        finish = True
-        window.blit(lose2, (200,200))
-        game_over = True
+        
+        if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
+            speed_x *= 1
+            speed_y *= 1
+        if ball.rect.y > win_height-59 or ball.rect.y < 0:
+            speed_y *= 1
+        if ball.rect.x < 0:
+            finish = True
+            window.blit(lose1, (200,200))
+            game_over = True
+        if ball.rect.x > win_width:
+            finish = True
+            window.blit(lose2, (200,200))
+            game_over = True
     
-racket1 = Player('racket.png', 30, 200, 4, 50, 150)
-racket2 = Player('racket.png', 520, 200, 4, 50, 150)
-ball = GameSprite('tennis-ball.png', 200, 200, 4, 50, 50)
 
-font.init()
-font = font.Font(None, 35)
-lose1 = font.render('PLAYER 1 LOSE!', True, (180, 0, 0))
-lose2 = font.render('PLAYER 2 LOSE!', True, (180, 0, 0))
     racket1.reset()
     racket2.reset()
-    hero1.update()
-    hero1.reset()
-    ball.update()
     ball.reset()
-    hero2.update()
-    hero2.reset()
-    displat.update()
+    racket1.update()
+    ball.update()
+    racket2.update()
+    display.update()
     clock.tick(FPS)   
 
 
